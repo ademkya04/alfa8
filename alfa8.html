@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>ALFAmedya | Gizli Giriş</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 10px;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+    input[type="password"], input[type="text"], input[type="email"], textarea {
+      padding: 12px;
+      font-size: 1em;
+      width: 280px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #222;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(255, 71, 71, 0.6);
+      transition: all 0.3s ease;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #ff4747;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    #result, #adminPanel {
+      margin-top: 30px;
+      font-size: 1.2em;
+    }
+    .hidden {
+      display: none;
+    }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      width: 250px;
+    }
+    .forgot-password {
+      background-color: #555;
+    }
+    @media (max-width: 600px) {
+      input[type="password"], input[type="text"], .button-container {
+        width: 90%;
+        flex-direction: column;
+        align-items: center;
+      }
+      .button-container button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+    .password-show-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      color: #fff;
+    }
+    .password-show-container label {
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 1em;
+      transition: color 0.3s ease;
+    }
+    .password-show-container input[type="checkbox"]:checked + label {
+      color: #ff4747;
+    }
+    .password-show-container label:hover {
+      color: #ff4747;
+    }
+    #supportToggle {
+      margin-top: 40px;
+      background-color: #28a745; /* yeşil renk */
+    }
+    #supportForm {
+      margin-top: 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align:center; font-size:3.5em; letter-spacing:10px; font-weight:bold; background: linear-gradient(90deg, #ff416c, #ff4b2b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ALFA8</div>
+
+  <input type="password" id="password" placeholder="Şifreyi girin" onkeydown="checkEnter(event)">
+
+  <div class="password-show-container">
+    <input type="checkbox" id="showPassword" onclick="togglePassword()">
+    <label for="showPassword">Şifreyi Göster</label>
+  </div>
+
+  <div class="button-container">
+    <button class="forgot-password" onclick="forgotPassword()">Şifremi Unuttum</button>
+    <button onclick="checkPassword()">Giriş</button>
+  </div>
+
+  <p id="result"></p>
+
+  <div id="adminPanel" class="hidden">
+    <h2>Yönetim Paneli</h2>
+    <input type="text" id="newPassword" placeholder="Yeni Şifre">
+    <input type="text" id="newRedirect" placeholder="Yönlendirme URL'si">
+    <button onclick="addUser()">Kullanıcı Ekle</button>
+    <div id="userList"></div>
+  </div>
+
+  <!-- Destek Butonu ve Formu -->
+  <button id="supportToggle" onclick="toggleSupportForm()">Destek</button>
+  <div id="supportForm">
+    <input type="text" id="supportName" placeholder="Adınız">
+    <input type="email" id="supportEmail" placeholder="E-posta">
+    <textarea id="supportMessage" placeholder="Mesajınız" rows="4"></textarea>
+    <button onclick="submitSupport()">Gönder</button>
+    <p id="supportResult" style="margin-top: 10px;"></p>
+  </div>
+
+  <script>
+    const users = {};
+
+    function saveUsers() {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function loadUsers() {
+      const data = localStorage.getItem('users');
+      if (data) {
+        Object.assign(users, JSON.parse(data));
+        renderUserList();
+      }
+    }
+
+    window.onload = loadUsers;
+
+    function checkPassword() {
+      const input = document.getElementById('password').value;
+      const result = document.getElementById('result');
+
+      // Ademkral, ademkraldır04 ve adem02 için yönlendirme
+      if (input === "ademkral") {
+        window.location.href = "https://drive.google.com/drive/folders/1OwzXLnfCz1QHv02uv-t0kd3OoG54rp8u";
+      } else if (input === "ademkraldır04") {
+        result.innerText = "Yönetim paneline giriş yapıldı.";
+        document.getElementById('adminPanel').classList.remove('hidden');
+      } else if (input === "adem02") {
+        window.location.href = "https://drive.google.com/drive/folders/1OwzXLnfCz1QHv02uv-t0kd3OoG54rp8u"; // Burada istediğiniz URL'yi ekleyebilirsiniz
+      } else if (users[input]) {
+        window.location.href = users[input].redirect;
+      } else {
+        result.innerText = "Hatalı şifre!";
+      }
+    }
+
+    function checkEnter(event) {
+      if (event.key === "Enter") {
+        checkPassword();
+      }
+    }
+
+    function forgotPassword() {
+      alert("Şifrenizi sıfırlama bağlantısı için destek ekibiyle iletişime geçin.");
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function addUser() {
+      const newPassword = document.getElementById('newPassword').value;
+      const redirect = document.getElementById('newRedirect').value;
+      if (newPassword && redirect) {
+        users[newPassword] = { redirect };
+        saveUsers();
+        renderUserList();
+      } else {
+        alert("Lütfen tüm alanları doldurun.");
+      }
+    }
+
+    function renderUserList() {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+      for (const [password, data] of Object.entries(users)) {
+        const entry = document.createElement('div');
+        entry.className = 'user-entry';
+
+        const redirectInput = document.createElement('input');
+        redirectInput.value = data.redirect;
+        redirectInput.placeholder = 'Yönlendirme URL';
+
+        const updateBtn = document.createElement('button');
+        updateBtn.textContent = 'Güncelle';
+        updateBtn.onclick = () => {
+          users[password] = {
+            redirect: redirectInput.value
+          };
+          saveUsers();
+          renderUserList();
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Sil';
+        deleteBtn.onclick = () => {
+          delete users[password];
+          saveUsers();
+          renderUserList();
+        };
+
+        entry.appendChild(redirectInput);
+        entry.appendChild(updateBtn);
+        entry.appendChild(deleteBtn);
+
+        userList.appendChild(entry);
+      }
+    }
+
+    function toggleSupportForm() {
+      const form = document.getElementById('supportForm');
+      form.style.display = form.style.display === 'none' || form.style.display === '' ? 'flex' : 'none';
+    }
+
+    function submitSupport() {
+      const name = document.getElementById('supportName').value;
+      const email = document.getElementById('supportEmail').value;
+      const message = document.getElementById('supportMessage').value;
+      const result = document.getElementById('supportResult');
+
+      if (!name || !email || !message) {
+        result.textContent = "Lütfen tüm alanları doldurun.";
+        result.style.color = "orange";
+        return;
+      }
+
+      console.log("Destek Mesajı:", { name, email, message });
+
+      result.textContent = "Mesajınız gönderildi. Teşekkürler!";
+      result.style.color = "lightgreen";
+
+      document.getElementById('supportName').value = '';
+      document.getElementById('supportEmail').value = '';
+      document.getElementById('supportMessage').value = '';
+    }
+  </script>
+</body>
+</html>
